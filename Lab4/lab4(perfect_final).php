@@ -69,46 +69,75 @@
 		{
 			 $err_pass="[Password should contain at least one special character]";
 		}
-        elseif(ctype_lower($_POST["pass"]))
-        {
-            $err_pass="[need at least one upperrcase]";
-        }
-        elseif(ctype_upper($_POST["pass"]))
-        {
-            $err_pass="[need at least one lowercase]";
-        }
-        elseif(ctype_digit($_POST["pass"]))
-        {
-            $err_pass="[need atleast one digit]";
-        }
 		else
 		{
-			 $pass=htmlspecialchars($_POST["pass"]);
-             if($_POST["pass"]==$_POST["confirm_pass"])
-         {
-             $confirm_pass=$_POST["pass"];
-         }
-         else
-         {
-             $err_confirm_pass="[pasword does not match]";
-         }
+            //
+            $u=0; $l=0; $d=0;
+            for($i=0; $i<strlen($_POST["pass"]); $i++)
+            {
+                if(ctype_upper($_POST["pass"][$i]))
+                {
+                    $u=1;
+                    break;
+                }
+            }
+            for($i=0; $i<strlen($_POST["pass"]); $i++)
+            {
+                if(ctype_lower($_POST["pass"][$i]))
+                {
+                    $l=1;
+                    break;
+                }
+            }
+            for($i=0; $i<strlen($_POST["pass"]); $i++)
+            {
+                if(ctype_digit($_POST["pass"][$i]))
+                {
+                    $d=1;
+                    break;
+                }
+            }
+            if(!$u==1 || !$l==1 || !$d==1)
+            {
+                $err_pass="[must have at least one upper case, one lower case & one numeric value]";
+            }
+            else
+            {
+                $pass=htmlspecialchars($_POST["pass"]);
+                if($_POST["pass"]==$_POST["confirm_pass"])
+                {
+                    $confirm_pass=$_POST["pass"];
+                }
+                elseif(empty($_POST["confirm_pass"]))
+                {
+                    $err_confirm_pass="[Please re-insert password]";
+                }
+                else
+                {
+                    $err_confirm_pass="[pasword does not match]";
+                }
+            }
 		}
-         
-         if(empty($_POST["email"]))
-         {
-             $err_email="[email required]";
-         }
-         elseif(!strpos($_POST["email"],"@"))
-         {
-             $err_email="[email must contain '@' sign]";
-         }
-         elseif(!strpos($_POST["email"],"."))
-         {
-             $err_email="[email must contain a dot('.') sign]";
-         }
-         else
-         {
-             $email=htmlspecialchars($_POST["email"]);
+        if(empty($_POST["email"]))
+        {
+            $err_email="[email required]";
+        }
+        elseif(!strpos($_POST["email"],"@"))
+        {
+            $err_email="[email must contain '@' sign]";
+        }
+        else
+        {
+            $pos_at  = strpos($_POST["email"],"@");
+            if(!strpos($_POST["email"],".",$pos_at))
+            {
+                $err_email="[at least one dot needed after '@' sign]";
+            }
+            else
+            {
+                $email=htmlspecialchars($_POST["email"]);
+            }
+             
          }
          if(empty($_POST["code"]))
          {
@@ -230,14 +259,14 @@
                 </tr>
                 <tr>
                     <td><span><b>Phone</b></span>
-                    <td>:<input type="text" name="code" size="5" value="<?php echo $code;?>" placeholder="code">-<input type="text" name="phone" size="13" value="<?php echo $phn;?>" placeholder="Number">
+                    <td>:<input type="text" name="code" size="5" value="<?php echo $code;?>" placeholder="code">-<input type="text" name="phone" size="12" value="<?php echo $number;?>" placeholder="Number">
                     <?php echo $err_code; echo $err_number;?></td>
                 </tr>
                 <tr>
                     <td><span><b>Address</b></span></td>
                     <td>:<input type="text" name="street" value="<?php echo $street;?>" placeholder="Street Address"><?php echo $err_street;?><br>
-                    :<input type="text" name="city" size="9" value="<?php echo $city?>" placeholder="City">-<input type="text" name="state" size="9" value="<?php echo $state?>" placeholder="State"><?php echo $err_city; echo $err_state?><br>
-                    :<input type="text" name="postal_code" value="<?php echo $postal_code?>" placeholder="Postal/Zip code"><?php echo $err_post_code;?></td>
+                    :<input type="text" name="city" size="9" value="<?php echo $city;?>" placeholder="City">-<input type="text" name="state" size="8" value="<?php echo $state;?>" placeholder="State"><?php echo $err_city; echo $err_state;?><br>
+                    :<input type="text" name="postal_code" value="<?php echo $post_code;?>" placeholder="Postal/Zip code"><?php echo $err_post_code;?></td>
                 </tr>
                 <tr>
                     <td><span><b>Birth Date</b></span></td>
@@ -288,7 +317,6 @@
 					    <input type="checkbox" name="suggestions[]" value="Music"><span>Google</span><br>
 						<input type="checkbox" name="suggestions[]" value="Games"><span>Blog Post</span><br>
 						<input type="checkbox" name="suggestions[]" value="Sports"><span>News Article</span>
-						<span><?php echo "&nbsp  ".$err_suggestions;?></span>
                         <?php echo $err_suggestions;?></td>
 				</tr>
                 <tr>
